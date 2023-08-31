@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="/googlemap.css">
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDHDImxvQ1_4e5_snhY6hyBfBYh6n78qbE&callback=initMap">
+        </script>
+    <script src="//code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.rawgit.com/googlemaps/js-marker-clusterer/gh-pages/src/markerclusterer.js"></script>
+</head>
+
+<body>
+    <h3>My Google Maps Demo</h3>
+    <div class="zoomStyle" id="zoomSize"></div>
+    <div id="map"></div>
+    <div class="infoWin" id="info"></div>
+
+
+    <!-- <script src="path/to/markerclusterer.js"></script> -->
+    <script>
+        var map;
+        var markers = [];
+        var markerCluster;
+        var marker_config = [
+            {
+                "id": 1,
+                "name": "台灣大道一段",
+                "site": "400台中市中區台灣大道一段1號鐵鹿大街A10",
+                "type": "Point",
+                "position": {
+                    lat: 24.1372369,
+                    lng: 120.68687
+                }
+            },
+            {
+                "id": 2,
+                "name": "台灣大道一段",
+                "site": "400台中市中區台灣大道一段1號",
+                "type": "Point",
+                "position": {
+                    lat: 24.1370597,
+                    lng: 120.6869718
+                }
+            },
+            {
+                "id": 3,
+                "name": "台灣大道一段",
+                "site": "400台中市中區台灣大道一段1號B3櫃位",
+                "type": "Point",
+                "position": {
+                    lat: 24.1373346,
+                    lng: 120.6872849
+                }
+            },
+            {
+                "id": 4,
+                "name": "新民街",
+                "site": "401台中市東區新民街88號",
+                "type": "Point",
+                "position": {
+                    lat: 24.137648,
+                    lng: 120.686498
+                }
+            },
+            {
+                "id": 5,
+                "name": "復興路四段",
+                "site": "401台中市東區復興路四段186號",
+                "type": "Point",
+                "position": {
+                    lat: 24.136575,
+                    lng: 120.6862517
+                }
+            },
+            {
+                "id": 6,
+                "name": "公園東路",
+                "site": "401台中市東區公園東路150號",
+                "type": "Point",
+
+                "position": {
+                    lat: 24.1356127,
+                    lng: 120.7073406
+                }
+            },
+            {
+                "id": 7,
+                "name": "自由路二段",
+                "site": "404台中市北區自由路二段湖心亭",
+                "type": "Point",
+                "position": {
+                    lat: 24.1397534,
+                    lng: 120.683731
+                }
+            },
+            {
+                "id": 8,
+                "name": "南京路",
+                "site": "4F, No. 66號南京路東區台中市401",
+                "type": "Point",
+                "position": {
+                    lat: 24.1361803,
+                    lng: 120.6883141
+                }
+            },
+            {
+                "id": 9,
+                "name": "樂業一路",
+                "site": "401台中市東區樂業一路79號",
+                "type": "Point",
+                "position": {
+                    lat: 24.1348453,
+                    lng: 120.6907701
+                }
+            },
+            {
+                "id": 10,
+                "name": "林森路",
+                "site": "403台中市西區林森路100巷",
+                "type": "Point",
+                "position": {
+                    lat: 24.1223663,
+                    lng: 120.6662814
+                }
+            },
+            {
+                "id": 11,
+                "name": "民生路",
+                "site": "40358台中市西區民生路368巷2弄12號",
+                "type": "Point",
+                "position": {
+                    lat: 24.1319946,
+                    lng: 120.6610709
+                }
+            },
+            {
+                "id": 12,
+                "name": "興大路",
+                "site": "402台中市南區興大路145號",
+                "type": "Point",
+                "position": {
+                    lat: 24.1218507,
+                    lng: 120.6742067
+                }
+            },
+            {
+                "id": 13,
+                "name": "忠孝路",
+                "site": "402台中市南區忠孝路",
+                "type": "Point",
+                "position": {
+                    lat: 24.1292282,
+                    lng: 120.6741345
+                }
+            },
+            {
+                "id": 14,
+                "name": "育德路",
+                "site": "404台中市北區育德路2號",
+                "type": "Point",
+                "position": {
+                    lat: 24.1507654,
+                    lng: 120.6792589
+                }
+            },
+            {
+                "id": 15,
+                "name": "館前路",
+                "site": "404台中市北區館前路1號",
+                "type": "Point",
+                "position": {
+                    lat: 24.1417558,
+                    lng: 120.6627565
+                }
+            },
+            {
+                "id": 16,
+                "name": "文昌東十一街",
+                "site": "406台中市北屯區文昌東十一街14巷1號",
+                "type": "Point",
+                "position": {
+                    lat: 24.1437317,
+                    lng: 120.677408
+                }
+            }
+        ];
+        var tenZoomSizeJson = [{
+            "id": 17,
+            "name": "台灣本島所有攝影機",
+            "site": "台灣本島",
+            "type": "Point",
+            "position": {
+                lat: 24.113338,
+                lng: 120.595232
+            }
+        }];
+        var sixteenZoomSizeJson = [{
+            "id": 18,
+            "name": "XXXX",
+            "site": "站區二路",
+            "type": "Point",
+            "position": {
+                lat: 24.114162,
+                lng: 120.61563
+            }
+        }];
+        var infoWindows = [];
+        var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        var getContent;
+        var positionList = [{
+            "lat": [],
+            "lng": []
+        }];
+        $(function () {
+            initMap();
+            markWaypointMap(marker_config);
+        })
+        function initMap() {//初始化地圖
+            var directionsService = new google.maps.DirectionsService();
+            var directionsRenderer = new google.maps.DirectionsRenderer(
+                {
+                    map: map,
+
+                    polylineOptions: {
+                        // visible:false,   
+                        strokeColor: '#6224BF',
+
+                        strokeOpacity: 0.8,
+
+                        strokeWeight: 8,
+                    },
+                    suppressMarkers: true,
+                    // 隱藏座標
+
+                    draggable: true
+                    // 拖曳路線
+                }
+            );
+            map = new google.maps.Map(document.getElementById("map"), {
+
+                center: new google.maps.LatLng(24.1437317, 120.677408),
+                // 地圖的起始顯示位置
+
+                zoom: 14,
+
+                mapTypeControl: false,
+                // 街景
+
+                streetViewControl: false,
+                // 地圖樣式 
+                // 上面兩個要關掉，避免而外收費。
+                clickableIcons: false
+
+            });
+            // markWaypointMap(marker_config);
+            directionsRenderer.setMap(map);
+            // 加入地圖圖層
+            google.maps.event.addListener(map.getStreetView(), 'visible_changed', function () {
+                if (map.getStreetView().getVisible()) {
+                    map.getStreetView().setOptions({
+                        enableCloseButton: false,
+                        clickToGo: false,
+                        addressControl: false,
+                        zoomControl: false,
+                        linksControl: false,
+                        panControl: false,
+                        fullscreenControl: false
+                    });
+                }
+            });
+            zoomInOutMap(directionsRenderer);
+            // vehicleRouteMap(directionsService, directionsRenderer);
+        }
+        function markWaypointMap(dataJson) {   // 載入座標和資訊視窗 
+            dataJson.forEach(function (e, i) {
+                markers[i] = new google.maps.Marker({
+                    position: e.position,
+                    map: map,
+                    label: labels[i],
+                    id: e.id,
+                    clickable: true,
+                    name: e.name,
+                    site: e.site,
+                    // animation: google.maps.Animation.DROP
+                });
+
+                markers[i].setMap(map);
+
+            });
+
+            console.log(markers)
+
+            marker_config.forEach(function (e, i) {
+                markers[i].addListener('click', function () {
+
+                    console.log(this.id)
+                    var infoContent = `<table id='mapTable' cellspacing='0'>
+                        <thead><tr><th colspan='2'>座標資訊</th></tr></thead>
+                        <tr><td>路名一</td><td>${markers[this.id - 1].name}</td></tr>
+                        <tr><td>地址一</td><td>${markers[this.id - 1].site}</td></tr>
+                        <tr><td>經度一</td><td>${markers[this.id - 1].position.lat()}</td></tr>
+                        <tr><td>緯度一</td><td>${markers[this.id - 1].position.lng()}</td></tr>
+                        <tr><td>id一</td><td>${markers[i].id}</td></tr>
+                        </table>`
+                    // infoWindows.open(map, markers[i]);
+                    $('#info').html(infoContent)
+                });
+            });
+            MarkerC();
+
+        }
+        function zoomInOutMarkerMap(getJson) {
+            getJson.forEach(function (e, i) {
+                markers[i] = new google.maps.Marker({
+                    position: e.position,
+                    map: map,
+                    id: e.id,
+                    clickable: true,
+                    name: e.name,
+                    site: e.site,
+                    animation: google.maps.Animation.DROP
+
+                });
+                markers[i].setMap(map);
+                getJson.forEach(function (e, i) {
+                    markers[i].addListener('click', function () {
+                        console.log(this.id)
+                        infoWindows = new google.maps.InfoWindow({
+                            content: "<div class='infoWin'  cellspacing='0'>\
+                        <thead><tr><th colspan='2'>座標資訊</th></tr></thead>\
+                        <tr><td>路名一</td><td>" + markers[i].name + "</td></tr>\
+                        <tr><td>地址一</td><td>" + markers[i].site + "</td></tr>\
+                        <tr><td>經度一</td><td>" + markers[i].position.lat() + "</td></tr>\
+                        <tr><td>緯度一</td><td>" + markers[i].position.lng() + "</td></tr>\
+                        <tr><td>圖片一</td><td><img class='photo_size' src='./image/"+ this.id + ".png'></td></tr>\
+                        <tr><td>id一</td><td>" + markers[i].id + "</td></tr>\
+                        </table>",
+                            disableAutoPan: true
+                            // 設置爲true時可禁用自動平移功能
+                        });
+                        infoWindows.open(map, markers[i]);
+
+                    });
+                });
+            });
+
+        }
+        function zoomInOutMap(directionsRenderer) {
+            $('#zoomSize').text("");
+            $('#zoomSize').text("目前縮放數值: " + map.getZoom());
+            map.addListener("zoom_changed", () => {
+                deleteRouteMap(directionsRenderer)
+                console.log(map.getZoom());
+                $('#zoomSize').text("");
+                $('#zoomSize').text("目前縮放數值: " + map.getZoom());
+                var zoomValue = map.getZoom()
+
+                if (zoomValue == 10) {
+
+                    deleteMarkersMap()
+                    // 呼叫清空上次的座標  
+
+                    zoomInOutMarkerMap(tenZoomSizeJson)
+                    // 呼叫10.json 與 16.json 標記座標用
+
+                }
+                else if (zoomValue == 12) {
+                    deleteMarkersMap()
+                    // 呼叫清空上次的座標  
+
+                    zoomInOutMarkerMap(sixteenZoomSizeJson)
+                    // 呼叫10.json 與 16.json 標記座標用
+                }
+                else if (zoomValue == 14) {
+
+                    showMarker(map)
+                    // 呼叫清空上次的座標
+                    // resetMap()
+
+                    // initMap()
+                    markers = [];
+                    markWaypointMap(marker_config)
+
+                    directionsRenderer.setMap(map);
+
+                }
+
+            });
+            // initMap();
+            // MarkerC();
+            // 當座標在一起時，改用Marker Clustering(標記叢集)。
+        }
+        function MarkerC() {
+            var mc = new MarkerClusterer(map, markers, {
+                // styles: styles,
+                imagePath: 'https://cdn.rawgit.com/googlemaps/js-marker-clusterer/gh-pages/images/m',
+                // clusterClass: ".mc-cluster",
+            });
+        }
+        function deleteRouteMap(directionsRenderer) {
+            if (map.getZoom() < 12) {
+                directionsRenderer.setMap(null)
+            }
+        }
+        function deleteMarkersMap() {
+            for (var i = 0; i < markers.length; i++) {
+                markers[i].setMap(null);
+            }
+            markers = [];
+        }
+        function showMarker(map) {
+            for (var i = 0; i < markers.length; i++) {
+                markers[i].setMap(map);
+            }
+        }
+
+        function vehicleRouteMap(directionsService, directionsRenderer) {  // 行車路線
+            // const selectedMode = document.getElementById("mode").value;  
+            const waypoint = [];
+
+            for (let i = 1; i < marker_config.length - 1; i++) {
+                waypoint.push({
+                    location: marker_config[i].position,
+                    stopover: true
+                });
+            }
+            // console.log(waypoint)
+            // 將經過點存入waypoint
+
+            var request = {
+                origin: marker_config[0].position,
+                // 出發點
+
+                destination: marker_config[marker_config.length - 1].position,
+                // 目的地
+
+                waypoints: waypoint,
+                // 經過點         
+
+                optimizeWaypoints: true,
+                // 使用更有效的順序重新排列waypoints來優化
+
+                travelMode: google.maps.TravelMode["WALKING"]
+                // 開車
+            }
+            // 設定出發點與目的地的座標和移動方式
+            directionsService.route(request).then((response) => {
+                directionsRenderer.setDirections(response);
+            }).catch((e) => window.alert("status not 200!"));
+
+
+            // 根據request條件，畫行車路線。
+        }
+
+    </script>
+</body>
+
+</html>

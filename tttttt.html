@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Marker Clustering</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <script src="https://googlemaps.github.io/js-markerclustererplus/dist/index.min.js"></script>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDHDImxvQ1_4e5_snhY6hyBfBYh6n78qbE&callback=initMap">
+        </script>
+    <link rel="stylesheet" type="text/css" href="/style.css">
+    <!-- jsFiddle will insert css and js -->
+</head>
+
+<body>
+    <div id="mapdivbig"></div>
+    <script>
+        function map_initialize() {
+            var mapoptions = {
+                center: new google.maps.LatLng(0, 0),
+                zoom: 0,
+                maxZoom: 15,
+                mapTypeId: google.maps.MapTypeId.TERRAIN,
+                disableDefaultUI: true,
+                zoomControl: true,
+                scrollwheel: true
+            };
+            var styles = [{
+                width: 30,
+                height: 30,
+                className: "custom-clustericon-1",
+            },
+            {
+                width: 40,
+                height: 40,
+                className: "custom-clustericon-2",
+            },
+            {
+                width: 50,
+                height: 50,
+                className: "custom-clustericon-3",
+            },
+            ];
+            var map = new google.maps.Map(document.getElementById("mapdivbig"),
+                mapoptions);
+            var infoWin = new google.maps.InfoWindow();
+            var bounds = new google.maps.LatLngBounds();
+            var markers = locations.map(function (location, i) {
+                bounds.extend(location);
+                map.fitBounds(bounds);
+                var marker = new google.maps.Marker({
+                    position: location
+                });
+                google.maps.event.addListener(marker, 'click', function (evt) {
+                    infoWin.setContent(location.info);
+                    infoWin.open(map, marker);
+                })
+                return marker;
+            });
+            var markerCluster = new MarkerClusterer(map, markers, {
+                styles: styles,
+                clusterClass: "custom-clustericon",
+            });
+        }
+        var locations = [{
+            lat: 45.4208,
+            lng: -123.8,
+            info: 'Location 1'
+        },
+        {
+            lat: 47.6117,
+            lng: -122.345,
+            info: 'Location 2'
+        },
+        {
+            lat: 47.6308,
+            lng: -122.375,
+            info: 'Location 3'
+        }
+        ]
+    </script>
+</body>
+
+</html>
